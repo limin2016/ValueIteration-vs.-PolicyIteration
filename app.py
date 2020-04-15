@@ -1,7 +1,6 @@
 from valueIteration import do_several_value_iterations
 from policyIteration import do_several_policy_iterations
-from utils import create_grid, printStates
-from State import State
+from utils import create_grid
 
 file_name = 'i1.txt'
 

@@ -24,7 +24,9 @@ def create_grid(file_name):
                     for col_index, val in enumerate(temp1):
                         if val == 'X':
                             state = State(0.0, False, row_index, col_index)
+                            state.set_initial_policy(noises)
                             states[row_index][col_index] = state
+
                         else:
                             init_val = float(val)
                             state = State(init_val, True, row_index, col_index)
@@ -62,7 +64,7 @@ def get_longest_length(states, grid_size):
             max_length = max(max_length, len(temp_str))
     return max_length
 
-def printStates(states, grid_size):
+def print_states(states, grid_size):
     #get_longest_length(states, grid_size)
     longest_length = get_longest_length(states, grid_size)
     for index_row, row_val in enumerate(states):
@@ -72,5 +74,13 @@ def printStates(states, grid_size):
                 print(temp_str.ljust(longest_length+3), end='')
             else:
                 print(temp_str.ljust(longest_length))
+
+def print_direction(states, grid_size):
+    for index_row, value_row in enumerate(states):
+        for index_col, state in enumerate(value_row):
+            if index_col<grid_size-1:
+                print(state.dir+' ', end='')
+            else:
+                print(state.dir)
 
 

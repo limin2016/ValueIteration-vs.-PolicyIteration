@@ -1,5 +1,5 @@
 import copy
-from utils import out_of_range, printStates
+from utils import out_of_range, print_states, print_direction
 import time
 
 def value_iteration(discount_factor, noises, states, grid_size):
@@ -9,7 +9,7 @@ def value_iteration(discount_factor, noises, states, grid_size):
         for index,state in enumerate(row_val):
             if state.is_terminal:
                 continue
-            next_states = [copy.copy(state), copy.copy(state), copy.copy(state), copy.copy(state)]
+            next_states = [copy.deepcopy(state), copy.deepcopy(state), copy.deepcopy(state), copy.deepcopy(state)]
             update_value(next_states[0], noises[0], noises[1], noises[2], noises[3], discount_factor, states, grid_size)
             update_value(next_states[1], noises[3], noises[0], noises[1], noises[2], discount_factor, states, grid_size)
             update_value(next_states[2], noises[2], noises[3], noises[0], noises[1], discount_factor, states, grid_size)
@@ -18,8 +18,17 @@ def value_iteration(discount_factor, noises, states, grid_size):
             for next_state in next_states:
                 if max_state.val < next_state.val:
                     max_state = next_state
+            maxDirIndex = 0
+            maxDir = max_state.noises[0]
+            dir = ['<', '^', '>', 'V']
+            for i, v in enumerate(max_state.noises):
+                if v >= maxDir:
+                    maxDir = v
+                    maxDirIndex = i
+            max_state.dir = dir[maxDirIndex]
             states[state.row_index][state.col_index] = copy.deepcopy(max_state)
             max_difference = max(max_difference, abs(max_state.val-state.val))
+
             del next_state
     if max_difference < acceptable_difference:
         return True
@@ -31,6 +40,7 @@ def value_iteration(discount_factor, noises, states, grid_size):
 
 def update_value(state, left_noise, up_noise, right_noise, down_noise, discount_factor, states, grid_size):
     # left point
+    state.noises = [left_noise, up_noise, right_noise, down_noise]
     row_index_left = state.row_index
     col_index_left = state.col_index - 1
     # up point
@@ -72,9 +82,13 @@ def update_value(state, left_noise, up_noise, right_noise, down_noise, discount_
 def do_several_value_iterations(discount_factor, noises, states, grid_size):
     time_start = time.time()
     if_converge = False
+    states[0][0].set_initial_policy(noises)
+    current_noises = states[0][0].noises
     while not if_converge:
-        if_converge = value_iteration(discount_factor, noises, states, grid_size)
+        if_converge = value_iteration(discount_factor, current_noises, states, grid_size)
     time_end = time.time()
     print('\n')
     print('Value iteration run ',time_end-time_start, ' s')
-    printStates(states, grid_size)
+    print_states(states, grid_size)
+    print('\nOptimal policy of each state:')
+    print_direction(states, grid_size)

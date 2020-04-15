@@ -9,6 +9,7 @@ class State(object):
         self.policy_change = True
         self.optimal_policy = False
         self.has_value = False
+        self.dir = '-'
 
     def set_initial_policy(self, noises):
         #self.noises = copy.deepcopy(noises)
